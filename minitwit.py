@@ -30,6 +30,11 @@ from flask import (
     flash,
 )
 from werkzeug import check_password_hash, generate_password_hash
+from inspect import getmembers, isfunction, currentframe
+import sys
+
+
+EXECUTION_FREQS = {}
 
 
 # configuration
@@ -65,11 +70,15 @@ def metrics():
 
 def connect_db():
     """Returns a new connection to the database."""
+    EXECUTION_FREQS[currentframe().f_code.co_name].inc()
+
     return sqlite3.connect(app.config["DATABASE"])
 
 
 def init_db():
     """Creates the database tables."""
+    EXECUTION_FREQS[currentframe().f_code.co_name].inc()
+
     with closing(connect_db()) as db:
         with app.open_resource("schema.sql") as f:
             db.cursor().executescript(f.read().decode("utf-8"))
@@ -78,6 +87,8 @@ def init_db():
 
 def query_db(query, args=(), one=False):
     """Queries the database and returns a list of dictionaries."""
+    EXECUTION_FREQS[currentframe().f_code.co_name].inc()
+
     cur = g.db.execute(query, args)
     rv = [
         dict((cur.description[idx][0], value) for idx, value in enumerate(row))
@@ -88,6 +99,8 @@ def query_db(query, args=(), one=False):
 
 def get_user_id(username):
     """Convenience method to look up the id for a username."""
+    EXECUTION_FREQS[currentframe().f_code.co_name].inc()
+
     rv = g.db.execute(
         "select user_id from user where username = ?", [username]
     ).fetchone()
@@ -96,11 +109,15 @@ def get_user_id(username):
 
 def format_datetime(timestamp):
     """Format a timestamp for display."""
+    EXECUTION_FREQS[currentframe().f_code.co_name].inc()
+
     return datetime.utcfromtimestamp(timestamp).strftime("%Y-%m-%d @ %H:%M")
 
 
 def gravatar_url(email, size=80):
     """Return the gravatar image for the given email address."""
+    EXECUTION_FREQS[currentframe().f_code.co_name].inc()
+
     return "http://www.gravatar.com/avatar/%s?d=identicon&s=%d" % (
         md5(email.strip().lower().encode("utf-8")).hexdigest(),
         size,
@@ -112,6 +129,8 @@ def before_request():
     """Make sure we are connected to the database each request and look
     up the current user so that we know he's there.
     """
+    EXECUTION_FREQS[currentframe().f_code.co_name].inc()
+
     request.start_time = datetime.now()
     g.db = connect_db()
     g.user = None
@@ -127,6 +146,8 @@ def before_request():
 @app.after_request
 def after_request(response):
     """Closes the database again at the end of the request."""
+    EXECUTION_FREQS[currentframe().f_code.co_name].inc()
+
     g.db.close()
     REPONSE_COUNTER.inc()
     t_elapsed_ms = (datetime.now() - request.start_time).total_seconds() * 1000
@@ -141,6 +162,7 @@ def timeline():
     messages as well as all the messages of followed users.
     """
     print(f"We got a visitor from: {str(request.remote_addr)}")
+    EXECUTION_FREQS[currentframe().f_code.co_name].inc()
 
     page = request.args.get("p", default=0, type=int)
 
@@ -164,6 +186,8 @@ def timeline():
 @app.route("/public")
 def public_timeline():
     """Displays the latest messages of all users."""
+    EXECUTION_FREQS[currentframe().f_code.co_name].inc()
+
     page = request.args.get("p", default=0, type=int)
     return render_template(
         "timeline.html",
@@ -180,6 +204,8 @@ def public_timeline():
 @app.route("/<username>")
 def user_timeline(username):
     """Display's a users tweets."""
+    EXECUTION_FREQS[currentframe().f_code.co_name].inc()
+
     profile_user = query_db(
         "select * from user where username = ?", [username], one=True
     )
@@ -216,6 +242,8 @@ def user_timeline(username):
 @app.route("/<username>/follow")
 def follow_user(username):
     """Adds the current user as follower of the given user."""
+    EXECUTION_FREQS[currentframe().f_code.co_name].inc()
+
     if not g.user:
         abort(401)
     whom_id = get_user_id(username)
@@ -232,6 +260,8 @@ def follow_user(username):
 
 @app.route("/<username>/unfollow")
 def unfollow_user(username):
+    EXECUTION_FREQS[currentframe().f_code.co_name].inc()
+
     """Removes the current user as follower of the given user."""
     if not g.user:
         abort(401)
@@ -250,6 +280,8 @@ def unfollow_user(username):
 @app.route("/add_message", methods=["POST"])
 def add_message():
     """Registers a new message for the user."""
+    EXECUTION_FREQS[currentframe().f_code.co_name].inc()
+
     if "user_id" not in session:
         abort(401)
     if request.form["text"]:
@@ -266,6 +298,8 @@ def add_message():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     """Logs the user in."""
+    EXECUTION_FREQS[currentframe().f_code.co_name].inc()
+
     if g.user:
         return redirect(url_for("timeline"))
     error = None
@@ -290,6 +324,8 @@ def login():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     """Registers the user."""
+    EXECUTION_FREQS[currentframe().f_code.co_name].inc()
+
     if g.user:
         return redirect(url_for("timeline"))
     error = None
@@ -323,6 +359,8 @@ def register():
 @app.route("/logout")
 def logout():
     """Logs the user out."""
+    EXECUTION_FREQS[currentframe().f_code.co_name].inc()
+
     flash("You were logged out")
     session.pop("user_id", None)
     return redirect(url_for("public_timeline"))
@@ -332,6 +370,15 @@ def logout():
 app.jinja_env.filters["datetimeformat"] = format_datetime
 app.jinja_env.filters["gravatar"] = gravatar_url
 
+
+# Populate the dictionary of functions mapping to one Counter per function
+this_module = sys.modules[__name__]
+
+for name, f_kind in getmembers(this_module):
+    if isfunction(f_kind):
+        EXECUTION_FREQS[name] = Counter(
+            f"minitwit_fct_{name}", f"No. of calls of {name}"
+        )
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0")
