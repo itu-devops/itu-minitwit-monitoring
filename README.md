@@ -1,5 +1,7 @@
 This is the basic _ITU_MiniTwit_ application (Python 3 and SQLite) with added support for monitoring with Prometheus and Grafana as a Dashboard.
 
+Compared to the application in the master branch, this on monitors frequencies of each function call with a separate counter with the name `minitwit_`+ name of the respective function.
+
 The application is Dockerized. To build the application and a client which simulates users clicking around the front page you have to:
 
   * Build the application:
