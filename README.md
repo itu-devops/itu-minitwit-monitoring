@@ -49,6 +49,7 @@ Now, do the following:
 
   * `Add data source`
   <img src="images/grafana_1.png" width="50%">
+  
   * Set the `Name` to a name that you deem suitable
   * Under `Config` choose the `Type` `Prometheus`
   * Under `Http settings` set the `Url` to `http://prometheus:9090` 
