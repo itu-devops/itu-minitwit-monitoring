@@ -71,33 +71,7 @@ Keep `Data Source` as `default` and add the PromQL query  `minitwit_http_respons
 
 Now, play and customize the dashboard a bit to your liking and add some other metrics.
 
-
-
-### Installing new Panels
-
-In case you need another panel type for example a gauge for the CPU load and in case you are running Grafana via Docker follow the steps below.
-
-  * Navigate to https://grafana.com/plugins?type=panel
-  * Choose a panel of your liking, e.g., https://grafana.com/plugins/briangann-gauge-panel/installation
-  * Copy the installation command, which has to be run on the Grafana server (machine)
-
-~~~bash
-$ docker exec -it itu-minitwit-monitoring_grafana_1 /bin/bash
-root@9c17c8757ffb:/# grafana-cli plugins install briangann-gauge-panel
-installing briangann-gauge-panel @ 0.0.6
-from url: https://grafana.com/api/plugins/briangann-gauge-panel/versions/0.0.6/download
-into: /var/lib/grafana/plugins
-
-✔ Installed briangann-gauge-panel successfully
-
-Restart grafana after installing plugins . <service grafana-server restart>
-
-root@9c17c8757ffb:/# exit
-exit
-$ docker restart itu-minitwit-monitoring_grafana_1
-itu-minitwit-monitoring_grafana_1
-~~~
-
+For example, add some monitoring for the function call frequencies (stored in metric `minitwit_fct_*`) that allow you to observe which function is called most often.
 
 
 
