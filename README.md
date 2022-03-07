@@ -4,7 +4,7 @@ The application is Dockerized. To build the application and a client which simul
 
   * Build the application:
 ```bash
-$ docker build -f docker/minitwit/Dockerfile -t <youruser>/webserver .
+$ docker build -f docker/minitwit/Dockerfile -t <youruser>/minitwitserver .
 ```
 
   * Build the test client:
