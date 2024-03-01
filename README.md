@@ -47,38 +47,46 @@ Navigate your browser to http://localhost:3000 and login with the default creden
 
 Now, do the following:
 
-  * `Add data source`
+  * `Add your first data source`
   <img src="images/grafana_1.png" width="50%">
 
+  * Select the `Prometheus` data source
   * Set the `Name` to a name that you deem suitable
-  * Under `Config` choose the `Type` `Prometheus`
-  * Under `Http settings` set the `Url` to `http://prometheus:9090` 
-  * Finally, click `Add`
+  * Under `Connection` set the `Url` to `http://prometheus:9090` 
+  * Finally, scroll down to the bottom and press `Save & test`
+  * If there's a `Successfully queried the Prometheus API.` message, click on `building a dashboard`
   <img src="images/grafana_2.png" width="50%">
   
 
-Now, `Create your first dashboard`:
+Now, `Add visualization`, select the Prometheus data source you just added
 
-<img src="images/grafana_1.png" width="50%">
+<img src="images/grafana_3.png" width="50%">
 
-
-Add a `SingleStat` click on the `Panel Title` and choose `Edit`.
+The default visualization type is a  `Time series`. Change it to a `Stat`.
 <img src="images/grafana_4.png" width="50%">
+
+In the `Metrics browser`, find `minitwit_http_responses_total` and click use query
+
+<img src="images/grafana_5.png" width="50%">
+
+Click on `Apply`
+
 <img src="images/grafana_6.png" width="50%">
 
+This is a good point to save the dashboard using the discette icon :)
 
-Keep `Data Source` as `default` and add the PromQL query  `minitwit_http_responses_total` to the field below.
+Play a bit around with more visualizations. Try make a `Time series` that display the query `rate(minitwit_http_responses_total[$__rate_interval])`
 
-Now, play and customize the dashboard a bit to your liking and add some other metrics.
+<img src="images/grafana_7.png" width="50%">
 
+Test what happens if you visit the minitwit server at http://localhost:5000/public and perform some actions.
 
+### Installing plugins
 
-### Installing new Panels
-
-In case you need another panel type for example a gauge for the CPU load and in case you are running Grafana via Docker follow the steps below.
+In case you need another panel type for example a clock and in case you are running Grafana via Docker follow the steps below.
 
   * Navigate to https://grafana.com/plugins?type=panel
-  * Choose a panel of your liking, e.g., https://grafana.com/plugins/briangann-gauge-panel/installation
+  * Choose a panel of your liking, e.g., https://grafana.com/grafana/plugins/grafana-clock-panel/?tab=overview
   * Copy the installation command, which has to be run on the Grafana server (machine)
 
 ~~~bash
@@ -98,8 +106,7 @@ $ docker restart itu-minitwit-monitoring_grafana_1
 itu-minitwit-monitoring_grafana_1
 ~~~
 
-
-
+<img src="images/grafana_8.png" width="50%">´
 
 ------
 
