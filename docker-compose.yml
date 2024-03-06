@@ -1,9 +1,10 @@
 version: '3.5'
 
-networks:
-  main:
-    name: itu-minitwit-network
 
+networks:
+  itu-minitwit-network:
+    external: false
+    name: itu-minitwit-network
 
 services:
   minitwitserver:
@@ -15,11 +16,10 @@ services:
     ports:
       - "5000:5000"
     networks:
-      - main
+      - itu-minitwit-network
     depends_on:
       - grafana
       - prometheus
-
 
   minitwitclient:
     build:
@@ -27,12 +27,11 @@ services:
       dockerfile: docker/minitwit_client/Dockerfile
     image: helgecph/minitwitclient
     networks:
-      - main
+      - itu-minitwit-network
     depends_on:
       - minitwitserver
       - grafana
       - prometheus
-
 
   prometheus:
     image: prom/prometheus
@@ -42,12 +41,11 @@ services:
     ports:
       - "9090:9090"
     networks:
-      - main
-
+      - itu-minitwit-network
 
   grafana:
     image: grafana/grafana:10.2.4
     ports:
-      - "3000:3000"  
+      - "3000:3000"
     networks:
-      - main
+      - itu-minitwit-network
