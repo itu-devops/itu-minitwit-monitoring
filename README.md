@@ -15,20 +15,20 @@ $ docker build -f docker/minitwit_client/Dockerfile -t <youruser>/minitwitclient
 
   * Start the application:
 ```bash
-$ docker-compose up
+$ docker compose up
 ```
 
 Alternatively, you can build and run the application in one step:
 
 ```bash
-$ docker-compose up --build
+$ docker compose up --build
 ```
 
 
 To stop the application again run:
 
 ```bash
-$ docker-compose down -v
+$ docker compose down -v
 ```
 
 After starting the entire application, you can reach:
@@ -41,31 +41,29 @@ After starting the entire application, you can reach:
 
 ## Starting Grafana and Instantiating a Dashboard
 
-
-
 Navigate your browser to http://localhost:3000 and login with the default credentials `admin`/`admin`. Remember later to change the password for your projects!
 
 Now, do the following:
 
-  * `Add your first data source`
+  * Click `Add your first data source`
   <img src="images/grafana_1.png" width="50%">
 
   * Select the `Prometheus` data source
   * Set the `Name` to a name that you deem suitable
-  * Under `Connection` set the `Url` to `http://prometheus:9090` 
+  * Under `Connection` set the `Url` to `http://prometheus:9090`
   * Finally, scroll down to the bottom and press `Save & test`
   * If there's a `Successfully queried the Prometheus API.` message, click on `building a dashboard`
   <img src="images/grafana_2.png" width="50%">
-  
 
-Now, `Add visualization`, select the Prometheus data source you just added
+
+Now, click `Add visualization`, select the Prometheus data source you just added
 
 <img src="images/grafana_3.png" width="50%">
 
 The default visualization type is a  `Time series`. Change it to a `Stat`.
 <img src="images/grafana_4.png" width="50%">
 
-In the `Metrics browser`, find `minitwit_http_responses_total` and click use query
+In the `Metrics browser`, find `minitwit_http_responses_total` and click `Run queries`
 
 <img src="images/grafana_5.png" width="50%">
 
@@ -73,7 +71,7 @@ Click on `Apply`
 
 <img src="images/grafana_6.png" width="50%">
 
-This is a good point to save the dashboard using the discette icon :)
+This is a good point to save the dashboard using the diskette icon :)
 
 Play a bit around with more visualizations. Try make a `Time series` that display the query `rate(minitwit_http_responses_total[$__rate_interval])`
 
@@ -90,15 +88,11 @@ In case you need another panel type for example a clock and in case you are runn
   * Copy the installation command, which has to be run on the Grafana server (machine)
 
 ~~~bash
-$ docker exec -it itu-minitwit-monitoring_grafana_1 /bin/bash
-root@9c17c8757ffb:/# grafana-cli plugins install briangann-gauge-panel
-installing briangann-gauge-panel @ 0.0.6
-from url: https://grafana.com/api/plugins/briangann-gauge-panel/versions/0.0.6/download
-into: /var/lib/grafana/plugins
+$ docker exec -it itu-minitwit-monitoring-grafana-1 /bin/bash
+root@9c17c8757ffb:/# grafana cli plugins install briangann-gauge-panel
+✔ Downloaded and extracted briangann-gauge-panel v2.0.1 zip successfully to /var/lib/grafana/plugins/briangann-gauge-panel
 
-✔ Installed briangann-gauge-panel successfully
-
-Restart grafana after installing plugins . <service grafana-server restart>
+Please restart Grafana after installing or removing plugins. Refer to Grafana documentation for instructions if necessary.
 
 root@9c17c8757ffb:/# exit
 exit
@@ -111,3 +105,9 @@ itu-minitwit-monitoring_grafana_1
 ------
 
 This `minitwit.py` application was adapted to be monitored with Prometheus with the help of [this](https://blog.codeship.com/monitoring-your-synchronous-python-web-applications-using-prometheus/) blog post.
+
+------
+
+# Credits
+
+  * 2024: [Leonora](https://github.com/Herover) updated the scenario to a modern Prometheus and Grafana setup. Thanks a lot!
