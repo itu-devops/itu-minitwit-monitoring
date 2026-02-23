@@ -1,6 +1,3 @@
-version: '3.5'
-
-
 networks:
   itu-minitwit-network:
     external: false
