@@ -33,8 +33,8 @@ $ docker compose down -v
 
 After starting the entire application, you can reach:
 
-  * _ITU-MiniTwit_ at http://localhost:5000
-  * _ITU-MiniTwit_ metrics for this node at http://localhost:5000/metrics
+  * _ITU-MiniTwit_ at http://localhost:5001
+  * _ITU-MiniTwit_ metrics for this node at http://localhost:5001/metrics
   * The Prometheus web-client at http://localhost:9090
   * Grafana at http://localhost:3000 (default login and password: `admin`)
 
@@ -77,7 +77,7 @@ Play a bit around with more visualizations. Try make a `Time series` that displa
 
 <img src="images/grafana_7.png" width="50%">
 
-Test what happens if you visit the minitwit server at http://localhost:5000/public and perform some actions.
+Test what happens if you visit the minitwit server at http://localhost:5001/public and perform some actions.
 
 ### Installing plugins
 
