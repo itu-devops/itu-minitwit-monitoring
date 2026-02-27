@@ -1,6 +1,3 @@
-version: '3.5'
-
-
 networks:
   itu-minitwit-network:
     external: false
@@ -14,7 +11,7 @@ services:
     image: helgecph/minitwitserver
     container_name: minitwit
     ports:
-      - "5000:5000"
+      - "5001:5000"
     networks:
       - itu-minitwit-network
     depends_on:
@@ -34,18 +31,30 @@ services:
       - prometheus
 
   prometheus:
-    image: prom/prometheus
+    build: 
+      dockerfile: ./Dockerfile
+      context: ./monitoring/prometheus
+    image: prometheus_image
     container_name: prometheus
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
     ports:
       - "9090:9090"
     networks:
       - itu-minitwit-network
 
   grafana:
-    image: grafana/grafana:10.2.4
+    build: 
+      dockerfile: ./Dockerfile
+      context: ./monitoring/grafana
+    image: grafana_image
+    container_name: grafana
     ports:
       - "3000:3000"
     networks:
       - itu-minitwit-network
+    volumes:
+      - grafana-storage:/var/lib/grafana
+
+volumes:
+  grafana-storage: {}
